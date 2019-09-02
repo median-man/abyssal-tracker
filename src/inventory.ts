@@ -1,52 +1,5 @@
-import { parseM3, sumisk } from "./isk";
-
-type ReadonlyRange = ReadonlyArray<ReadonlyArray<string | number>>;
-
-interface InventoryItem {
-  readonly name: string;
-  readonly units: number;
-  readonly group: string;
-  readonly volume: number;
-  readonly isk: number;
-  toRange(includeHeaders?: boolean): ReadonlyRange;
-}
-
-class InventoryItemImp implements InventoryItem {
-  constructor(
-    readonly name: string,
-    readonly units: number,
-    readonly group: string,
-    readonly volume: number,
-    readonly isk: number
-  ) {}
-
-  toRange(includeHeaders = false): ReadonlyRange {
-    const result: (string | number)[][] = [];
-    if (includeHeaders) {
-      result.push(["name", "group", "units", "volume", "isk"]);
-    }
-    result.push([this.name, this.group, this.units, this.volume, this.isk]);
-    return result as ReadonlyRange;
-  }
-
-  static createFromTsv(tsv: string): InventoryItem {
-    const values = tsv
-      .trim()
-      .split("\t")
-      .map(function(s) {
-        return s.trim();
-      });
-
-    const name = values[0];
-    const units = parseInt(values[1]);
-    const group = values[2];
-    const volume = parseM3(values[5]);
-    const isk = sumisk(values[6]);
-    const inventoryItem = new InventoryItemImp(name, units, group, volume, isk);
-
-    return inventoryItem;
-  }
-}
+import { InventoryItem, InventoryItemImp } from "./inventory-item";
+import { ReadonlyRange } from "./readonly-range";
 
 interface Inventory {
   readonly items: InventoryItem[];
@@ -55,24 +8,24 @@ interface Inventory {
 }
 
 export class InventoryImp implements Inventory {
+  public static createFromClip(clip: string): Inventory {
+    const items = clip.split("\n").map(InventoryItemImp.createFromTsv);
+    return new InventoryImp(items);
+  }
+
   constructor(readonly items: InventoryItem[]) {}
 
-  toRange(includeHeaders = false): ReadonlyRange {
+  public toRange(includeHeaders = false): ReadonlyRange {
     const result = [];
     if (includeHeaders) {
       result.push(this.items[0].toRange(true)[0]);
     }
-    this.items.map(item => item.toRange()[0]).forEach(result.push);
+    this.items.map((item) => item.toRange()[0]).forEach(result.push);
     return result as ReadonlyRange;
   }
 
-  totalIsk(): number {
+  public totalIsk(): number {
     return this.items.map(({ isk }) => isk).reduce((a, b) => a + b, 0);
-  }
-
-  static createFromClip(clip): Inventory {
-    const items = clip.split("\n").map(InventoryItemImp.createFromTsv);
-    return new InventoryImp(items);
   }
 }
 // function createInventoryFromInventoryClip(clip) {

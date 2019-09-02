@@ -4,11 +4,16 @@
   "description": "",
   "main": "inventory.js",
   "scripts": {
+    "build": "tsc --build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/google-apps-script": "0.0.58"
+  },
+  "devDependencies": {
+    "tslint": "^5.19.0",
+    "typescript": "^3.6.2"
   }
 }

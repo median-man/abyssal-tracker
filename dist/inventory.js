@@ -1,44 +1,14 @@
 "use strict";
-exports.__esModule = true;
-var isk_1 = require("./isk");
-var InventoryItemImp = /** @class */ (function () {
-    function InventoryItemImp(name, units, group, volume, isk) {
-        this.name = name;
-        this.units = units;
-        this.group = group;
-        this.volume = volume;
-        this.isk = isk;
-    }
-    InventoryItemImp.prototype.toRange = function (includeHeaders) {
-        if (includeHeaders === void 0) { includeHeaders = false; }
-        var result = [];
-        if (includeHeaders) {
-            result.push(["name", "group", "units", "volume", "isk"]);
-        }
-        result.push([this.name, this.group, this.units, this.volume, this.isk]);
-        return result;
-    };
-    InventoryItemImp.createFromTsv = function (tsv) {
-        var values = tsv
-            .trim()
-            .split("\t")
-            .map(function (s) {
-            return s.trim();
-        });
-        var name = values[0];
-        var units = parseInt(values[1]);
-        var group = values[2];
-        var volume = isk_1.parseM3(values[5]);
-        var isk = isk_1.sumisk(values[6]);
-        var inventoryItem = new InventoryItemImp(name, units, group, volume, isk);
-        return inventoryItem;
-    };
-    return InventoryItemImp;
-}());
+Object.defineProperty(exports, "__esModule", { value: true });
+var inventory_item_1 = require("./inventory-item");
 var InventoryImp = /** @class */ (function () {
     function InventoryImp(items) {
         this.items = items;
     }
+    InventoryImp.createFromClip = function (clip) {
+        var items = clip.split("\n").map(inventory_item_1.InventoryItemImp.createFromTsv);
+        return new InventoryImp(items);
+    };
     InventoryImp.prototype.toRange = function (includeHeaders) {
         if (includeHeaders === void 0) { includeHeaders = false; }
         var result = [];
@@ -53,10 +23,6 @@ var InventoryImp = /** @class */ (function () {
             var isk = _a.isk;
             return isk;
         }).reduce(function (a, b) { return a + b; }, 0);
-    };
-    InventoryImp.createFromClip = function (clip) {
-        var items = clip.split("\n").map(InventoryItemImp.createFromTsv);
-        return new InventoryImp(items);
     };
     return InventoryImp;
 }());
