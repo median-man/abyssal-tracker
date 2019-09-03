@@ -19,8 +19,12 @@ export class InventoryItemImp implements InventoryItem {
         return s.trim();
       });
 
+    // @TODO
+    // if values.length == 1 // there are no tabs, not tsv
+    // throw error: expected tab separated values but got ...
+
     const name = values[0];
-    const units = parseInt(values[1]);
+    const units = parseInt(values[1], 10);
     const group = values[2];
     const volume = parseM3(values[5]);
     const isk = sumisk(values[6]);
@@ -34,7 +38,7 @@ export class InventoryItemImp implements InventoryItem {
     readonly units: number,
     readonly group: string,
     readonly volume: number,
-    readonly isk: number
+    readonly isk: number,
   ) {}
 
   public toRange(includeHeaders = false): ReadonlyRange {

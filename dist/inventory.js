@@ -7,6 +7,7 @@ var InventoryImp = /** @class */ (function () {
     }
     InventoryImp.createFromClip = function (clip) {
         var items = clip.split("\n").map(inventory_item_1.InventoryItemImp.createFromTsv);
+        Logger.log(JSON.stringify(items));
         return new InventoryImp(items);
     };
     InventoryImp.prototype.toRange = function (includeHeaders) {

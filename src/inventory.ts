@@ -10,6 +10,7 @@ interface Inventory {
 export class InventoryImp implements Inventory {
   public static createFromClip(clip: string): Inventory {
     const items = clip.split("\n").map(InventoryItemImp.createFromTsv);
+    Logger.log(JSON.stringify(items));
     return new InventoryImp(items);
   }
 
